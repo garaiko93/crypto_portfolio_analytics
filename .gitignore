@@ -1,0 +1,7 @@
+data/
+.idea/
+venv/
+resources/my_access.py
+src/commands.txt
+tests/develop.py
+resources/__pycache__/my_access.cpython-312.pyc
