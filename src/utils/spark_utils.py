@@ -41,6 +41,7 @@ def read_table(schema: str, table_name: str):
             properties=POSTGRES_CONNECTION_PROPERTIES)
     )
 
+
 def write_table_in_postgres(df: DataFrame, database: str, table_name: str):
     table = f"{database}.{table_name}"
     df.write.jdbc(url=POSTGRES_URL,

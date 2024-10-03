@@ -1,6 +1,7 @@
 data/
 .idea/
 venv/
+*.pyc
 resources/my_access.py
 src/commands.txt
 tests/develop.py

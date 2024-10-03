@@ -61,18 +61,18 @@ def process_fees(df: DataFrame, operation: str):
 if __name__ == "__main__":
 
     spark = get_spark("binance - refine")
-    print("starting refinement")
+    print("starting portfolio snapshoot")
 
     # args = get_parameteres()
-    to_date = "20240406"
+    date_str = "20240406"
 
     # read refined trades table from postgresql
     df_trades = read_table(config.REFINED_DB, config.REFINED_TRADES)
     df_staking_rewards = read_table(config.REFINED_DB, config.REFINED_STAKING_REWARDS)
-
+    df_trades.show()
     # filter by given date or take whole table
-    df_trades_filtered = df_trades.filter(col("timestamp") < to_date(lit(to_date), "yyyyMMdd"))
-    df_staking_rewards_filtered = df_staking_rewards.filter(col("timestamp") < to_date(lit(to_date), "yyyyMMdd"))
+    df_trades_filtered = df_trades.filter(col("timestamp") < to_date(lit(date_str), "yyyyMMdd"))
+    df_staking_rewards_filtered = df_staking_rewards.filter(col("timestamp") < to_date(lit(date_str), "yyyyMMdd"))
     # df_trades_filtered = df_trades.filter(col("timestamp") < args.datekey)
     # df_staking_rewards_filtered = df_trades.filter(col("timestamp") < args.datekey)
 
@@ -133,3 +133,6 @@ if __name__ == "__main__":
 
     # todo: review busd and usdt values, why?
     # todo: fill gaps in prices by extrapolate
+    # todo: create lookup table and function for coin per id:
+    #  check the name if it is content in any of the historical names of a coins names and add id
+    #  create a scd2 for the crypto info, like for names

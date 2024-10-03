@@ -28,9 +28,10 @@ def convert_coin(df: DataFrame, coin_col: str, amount_col: str, converted_col: s
 
     # todo: add mappings of coins that changed of name
     # todo: create lookup, substitute name by an id
-    # luna -> lunac
+    # luna -> lunac: luna prices has a problem in yahoofinance
     # bttc -> btt
     # miota -> iota
+    # matic -> pol ?
 
 
 

@@ -136,13 +136,13 @@ if __name__ == "__main__":
     df_refined_binance_trades = refine_binance_trades(
         df_raw_binance.filter(col("Operation").isin(config.BINANCE_TRADE_OPS))
     )
-    # df_refined_binance_trades.show(truncate=False)
+    df_refined_binance_trades.show(truncate=False)
 
     # process staking rewards
     df_refined_staking_rewards = refine_binance_rewards(
         df_raw_binance.filter(col("Operation").isin(config.BINANCE_STAKING_REWARDS_OPS))
     )
-    # df_refined_staking_rewards.show(truncate=False)
+    df_refined_staking_rewards.show(truncate=False)
 
 
 
