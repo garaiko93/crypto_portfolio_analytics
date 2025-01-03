@@ -3,7 +3,7 @@ import argparse
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, to_date, lit, collect_list, to_json, create_map, sum
 
-from config import config
+import config
 from utils.date_utils import get_load_date_today
 from utils.spark_utils import get_spark, read_table
 

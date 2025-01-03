@@ -2,7 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit, collect_list, udf, sum
 from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 
-from config import config
+import config
 from utils.convert_coins import convert_coin
 from utils.spark_utils import read_table, get_spark, write_table_in_postgres
 
@@ -43,6 +43,17 @@ def process_transactions(operations, coins, changes):
         elif op == "Transaction Revenue":
             received_coin = coin
             received_amount = change
+        elif op == "Binance Convert":
+            received_coin = coin
+            received_amount = change
+
+    if list(set(operations))[0] == "Binance Convert":
+        sent_ix = next(i for i, num in enumerate(changes) if num < 0)
+        received_ix = next(i for i, num in enumerate(changes) if num > 0)
+        sent_coin = coins[sent_ix]
+        sent_amount = abs(changes[sent_ix])
+        received_coin = coins[received_ix]
+        received_amount = abs(changes[received_ix])
 
     if sent_coin in config.STABLE_COINS_AND_FIAT:
         action = "buy"
@@ -84,7 +95,7 @@ def refine_binance_trades(df: DataFrame) -> DataFrame:
         col("User_Id").alias("user_id"),
         col("Account").alias("account"),
         col("processed_transactions.*"),
-        lit(config.BINANCE_EXCHANGE_NAME).alias("exchange"),
+        lit(config.binance.EXCHANGE_NAME).alias("exchange"),
         col("date_key"),
         col("year_month")
     )
@@ -94,8 +105,6 @@ def refine_binance_trades(df: DataFrame) -> DataFrame:
     # final_df = convert_coin(final_df, "sent_coin", "sent_amount", "sent_amount_in_usd")
     # final_df = convert_coin(final_df, "received_coin", "received_amount", "received_amount_in_usd")
     final_df = convert_coin(final_df, "fee_coin", "fee_amount", "fee_amount_in_usd")
-
-    # write_table_in_postgres(final_df, REFINED_DB, REFINED_TRADES)
 
     return final_df
 
@@ -112,7 +121,7 @@ def refine_binance_rewards(df: DataFrame) -> DataFrame:
         col("date_key"),
         col("Coin").alias("received_coin"),
         col("Change").alias("received_amount"),
-        lit(config.BINANCE_EXCHANGE_NAME).alias("exchange"))
+        lit(config.binance.EXCHANGE_NAME).alias("exchange"))
 
     print(f"table has {final_df.count()} records.")
 
@@ -129,18 +138,18 @@ if __name__ == "__main__":
     print("starting refinement")
     
     # load raw dataframes
-    df_raw_binance = read_table(config.RAW_DB, config.BINANCE_RAW_TABLE)
+    df_raw_binance = read_table(config.RAW_DB, config.binance.RAW_TABLE)
 
     # refine raw transactions into trades and rewards separately
     # process trades - buy and sells
     df_refined_binance_trades = refine_binance_trades(
-        df_raw_binance.filter(col("Operation").isin(config.BINANCE_TRADE_OPS))
+        df_raw_binance.filter(col("Operation").isin(config.binance.TRADE_OPS))
     )
     df_refined_binance_trades.show(truncate=False)
 
     # process staking rewards
     df_refined_staking_rewards = refine_binance_rewards(
-        df_raw_binance.filter(col("Operation").isin(config.BINANCE_STAKING_REWARDS_OPS))
+        df_raw_binance.filter(col("Operation").isin(config.binance.STAKING_REWARDS_OPS))
     )
     df_refined_staking_rewards.show(truncate=False)
 

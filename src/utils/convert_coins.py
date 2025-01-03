@@ -1,9 +1,8 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, desc
 
-from config import config
+import config
 from utils.spark_utils import read_table
-
 
 
 def convert_coin(df: DataFrame, coin_col: str, amount_col: str, converted_col: str, date_col: str="date_key"):

@@ -2,6 +2,7 @@ data/
 .idea/
 venv/
 *.pyc
+.DS_Store
 resources/my_access.py
 src/commands.txt
 tests/develop.py

@@ -2,61 +2,54 @@ import os
 
 
 
-class ConfigClass():
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__)).split("resources")[0]
-    SCHEMAS_PATH = f"{ROOT_DIR}/resources/schemas"
-    # inputCsvPath = "data/raw/binance/csvByMonth/"
-    RAW_DATA_PATH = f"{ROOT_DIR}/data/raw"
-    EXCHANGES_RAW_FILES = f"{RAW_DATA_PATH}/exchanges"
+# class GeneralConfig():
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__)).split("resources")[0]
+SCHEMAS_PATH = f"{ROOT_DIR}/resources/schemas"
+# inputCsvPath = "data/raw/binance/csvByMonth/"
+RAW_DATA_PATH = f"{ROOT_DIR}/data/raw"
+EXCHANGES_RAW_FILES = f"{RAW_DATA_PATH}/exchanges"
+
+##################################################################
+# POSTGRESQL DATABASE
+##################################################################
+RAW_DB = "raw"
+REFINED_DB = "refined"
+CURATED_DB = "curated"
+
+# refined tables
+REFINED_TRADES = "trades"
+REFINED_STAKING_REWARDS = "staking_rewards"
+USD_CRYPTO_PRICES_JOIN = "daily_closing_prices_usd_join"
+USD_CRYPTO_PRICES_UNION = "daily_closing_prices_usd_union"
+
+##################################################################
+# OTHER VARIABLES
+##################################################################
+STABLE_COINS = ["USDT", "BUSD", "USDC"]
+FIAT = ["EUR", "CHF", "USD"]
+STABLE_COINS_AND_FIAT = STABLE_COINS + FIAT
+
+
+class BinanceConfig:
+    EXCHANGE_NAME = "binance"
+    RAW_TABLE = "binance_record_history_raw"
 
     # BINANCE VARIABLES
-    BINANCE_RAW_PATH = f"{EXCHANGES_RAW_FILES}/binance"
-    BINANCE_CSV_PATH = f"{BINANCE_RAW_PATH}/csv"
-
-    # SWISSBORG VARIABLES
-    SWISSBORG_RAW_PATH = f"{EXCHANGES_RAW_FILES}/swissborg"
-    SWISSBORG_CSV_PATH = f"{SWISSBORG_RAW_PATH}/csv"
-    # SWISSBORG_FILE_PATTERN = f"{SWISSBORG_CSV_PATH}/account_statement_"
-
-    ##################################################################
-    # POSTGRESQL DATABASE
-    ##################################################################
-    RAW_DB = "raw"
-    REFINED_DB = "refined"
-    CURATED_DB = "curated"
-
-    # BINANCE
-    BINANCE_EXCHANGE_NAME = "binance"
-    BINANCE_RAW_TABLE = "binance_record_history_raw"
-
-    # SWISSBORG
-    SWISSBORG_EXCHANGE_NAME = "swissborg"
-    SWISSBORG_RAW_TABLE = "swissborg_record_history_raw"
-
-    # KUCOIN
-    KUCOIN_EXCHANGE_NAME = "kucoin"
-    KUCOIN_RAW_TABLE = "kucoin_record_history_raw"
-
-
-    # refined tables
-    REFINED_TRADES = "trades"
-    REFINED_STAKING_REWARDS = "staking_rewards"
-    USD_CRYPTO_PRICES_JOIN = "daily_closing_prices_usd_join"
-    USD_CRYPTO_PRICES_UNION = "daily_closing_prices_usd_union"
-
-
+    RAW_PATH = f"{EXCHANGES_RAW_FILES}/{EXCHANGE_NAME}"
+    CSV_PATH = f"{RAW_PATH}/csv"
 
     ##################################################################
     # BINANCE VARIABLES
     ##################################################################
+    TRADE_OPS = ["Transaction Buy",
+                 "Transaction Spend",
+                 "Transaction Fee",
+                 "Transaction Sold",
+                 "Transaction Revenue",
+                 "Binance Convert"
+                 ]
 
-    BINANCE_TRADE_OPS = ["Transaction Buy",
-                         "Transaction Spend",
-                         "Transaction Fee",
-                         "Transaction Sold",
-                         "Transaction Revenue"]
-
-    BINANCE_STAKING_REWARDS_OPS = [
+    STAKING_REWARDS_OPS = [
         "Staking Rewards",
         "Simple Earn Locked Rewards",
         "Simple Earn Flexible Interest",
@@ -70,6 +63,36 @@ class ConfigClass():
         "BNB Vault Rewards",
         "Token Swap - Distribution"
     ]
+
+
+    # SWISSBORG
+class SwissborgConfig:
+    EXCHANGE_NAME = "swissborg"
+    RAW_TABLE = "swissborg_record_history_raw"
+
+    # SWISSBORG VARIABLES
+    RAW_PATH = f"{EXCHANGES_RAW_FILES}/{EXCHANGE_NAME}"
+    CSV_PATH = f"{RAW_PATH}/csv"
+    # SWISSBORG_FILE_PATTERN = f"{SWISSBORG_CSV_PATH}/account_statement_"
+
+    TRADE_OPS = ["Buy",
+                           "Sell"
+                           ]
+
+    STAKING_REWARDS_OPS = [
+        "Payouts"
+    ]
+
+class KucoinConfig:
+    # KUCOIN
+    KUCOIN_EXCHANGE_NAME = "kucoin"
+    KUCOIN_RAW_TABLE = "kucoin_record_history_raw"
+
+
+
+
+
+
 
     # BINANCE_OPS = {'trade_ops': ["Transaction Buy",
     #                              "Transaction Spend",
@@ -116,24 +139,7 @@ class ConfigClass():
     #                }
 
 
-    ##################################################################
-    # SWISSBORG VARIABLES
-    ##################################################################
 
-    SWISSBORG_TRADE_OPS = ["Buy",
-                         "Sell"
-                           ]
-
-    SWISSBORG_STAKING_REWARDS_OPS = [
-        "Payouts"
-    ]
-
-    ##################################################################
-    # OTHER VARIABLES
-    ##################################################################
-    STABLE_COINS = ["USDT", "BUSD", "USDC"]
-    FIAT = ["EUR", "CHF", "USD"]
-    STABLE_COINS_AND_FIAT = STABLE_COINS + FIAT
 
 
 
@@ -163,5 +169,7 @@ class ConfigClass():
 #                ]
 #                }
 
-
-config = ConfigClass()
+# config = GeneralConfig
+binance = BinanceConfig
+swissborg = SwissborgConfig
+kucoin = KucoinConfig

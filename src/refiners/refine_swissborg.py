@@ -2,10 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, collect_list, udf, lit, sum
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 
-from config import ConfigClass, config
-
-# from config import SWISSBORG_STAKING_REWARDS_OPS, SWISSBORG_TRADE_OPS, SWISSBORG_EXCHANGE_NAME, STABLE_COINS, \
-#     STABLE_COINS_AND_FIAT, RAW_DB, SWISSBORG_RAW_TABLE
+import config
 from utils.spark_utils import read_table
 
 
@@ -33,7 +30,6 @@ def process_transactions(operations, coins, changes, fees):
         #     received_coin = coin
         #     received_amount = change
 
-
         if sent_coin in config.STABLE_COINS_AND_FIAT:
             action = "buy"
         elif received_coin in config.STABLE_COINS_AND_FIAT:
@@ -47,6 +43,7 @@ def process_transactions(operations, coins, changes, fees):
         price = received_amount / sent_amount
 
     return sent_coin, sent_amount, fee_coin, fee_amount, received_coin, received_amount, price, action
+
 
 schema = StructType([
     StructField("sent_coin", StringType(), True),
@@ -90,7 +87,7 @@ def refine_swissborg_trades(df) -> DataFrame:
     final_df = processed_df.select(
         col("time_utc").alias("timestamp"),
         col("processed_transactions.*"),
-        lit(config.SWISSBORG_EXCHANGE_NAME).alias("exchange"),
+        lit(config.swissborg.EXCHANGE_NAME).alias("exchange"),
         col("date_key"),
         col("year_month")
     )
@@ -113,7 +110,7 @@ def refine_swissborg_rewards(df):
         col("date_key"),
         col("currency").alias("received_coin"),
         col("net_amount").alias("received_amount"),
-        lit(config.SWISSBORG_EXCHANGE_NAME).alias("exchange"))
+        lit(config.swissborg.EXCHANGE_NAME).alias("exchange"))
 
     print(f"table has {final_df.count()} records.")
 
@@ -123,18 +120,18 @@ def refine_swissborg_rewards(df):
 
 
 if __name__ == "__main__":
-    df_raw_swissborg = read_table(config.RAW_DB, config.SWISSBORG_RAW_TABLE)
+    df_raw_swissborg = read_table(config.RAW_DB, config.swissborg.RAW_TABLE)
     df_raw_swissborg.show()
 
     # process trades - buy and sells
-    # df_refined_swissborg_trades = refine_swissborg_trades(
-    #     df_raw_swissborg.filter(col("type").isin(config.SWISSBORG_TRADE_OPS))
-    # )
-    # df_refined_swissborg_trades.show(truncate=False)
+    df_refined_swissborg_trades = refine_swissborg_trades(
+        df_raw_swissborg.filter(col("type").isin(config.swissborg.TRADE_OPS))
+    )
+    df_refined_swissborg_trades.show(truncate=False)
 
     # process staking rewards
     df_refined_rewards = refine_swissborg_rewards(
-        df_raw_swissborg.filter(col("type").isin(config.SWISSBORG_STAKING_REWARDS_OPS))
+        df_raw_swissborg.filter(col("type").isin(config.swissborg.STAKING_REWARDS_OPS))
     )
     df_refined_rewards.show(truncate=False)
 
